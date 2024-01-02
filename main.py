@@ -1,11 +1,16 @@
-import discord
-import config
 from datetime import datetime
-from discord.ext import tasks, commands
-from start_view import StartView 
+
+import discord
+from discord.ext import commands, tasks
+
+import config
 import scheduler
+from event import Event
+from start_view import StartView
+from styles import info_embed, question_embed
 
 
+# extention of Bot class with min heap
 class TeachingAssistantBot(commands.Bot):
     events_heap = scheduler.MinHeap()
 
@@ -24,14 +29,23 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as ex:
         print(ex)
+    scheduler.db_init()
+    saved_events = scheduler.db_load()
+    for event in saved_events:
+        e = Event(event[0], event[1], event[2], event[3], event[4], [], event[6])
+        e.body_from_text(event[5])
+        bot.events_heap.push(e)
+    sender.start()
 
 
+# info slash command
 @bot.tree.command(name="info")
 async def info(iteraction):
     root_channel = bot.get_channel(iteraction.channel_id)
     await root_channel.send(config.INFO_TEXT)
 
 
+# start slash command
 @bot.tree.command(name="start")
 async def start(interaction):
     root_channel = bot.get_channel(interaction.channel_id)
@@ -40,11 +54,25 @@ async def start(interaction):
     await root_channel.send(view=view)
 
 
-@tasks.loop(seconds=60)
+# loop with 30 seconds interval, which checks scheduled events and sends it
+@tasks.loop(seconds=20)
 async def sender():
-    if len(bot.events_heap.heap) != 0:
-        dt_obj = datetime.strptime(bot.events_heap.heap[-1]["dt"], '%d/%m/%y %H:%M:%S')
-        if datetime.now() >= dt_obj:
-            pass #TODO: написать отправку вопросов и сообщений
+    events = []
+    while len(bot.events_heap.heap) != 0  and \
+                        datetime.now() >= datetime.strptime(bot.events_heap.heap[-1].dt, '%d/%m/%y %H:%M:%S'):
+        events.append(bot.events_heap.pop())
+    for event in events:
+        channel = bot.get_channel(event.channel)
+        if event.type == "question":
+            await channel.send(embed=question_embed[event.header, event.body])
+        elif event.type == "info":
+            await channel.send(embed=info_embed(event.header, event.body[0]))
 
+
+@sender.before_loop
+async def before_sender():
+    await bot.wait_until_ready()
+
+
+# running the bot
 bot.run(config.TOKEN)

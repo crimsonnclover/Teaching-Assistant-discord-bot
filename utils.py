@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 
+# function for validate channel user input and returns channel id 
 def get_channel(content: str) -> int:
     pattern = r'<#(\d+)>'
     match = re.match(pattern, content)
@@ -10,8 +11,9 @@ def get_channel(content: str) -> int:
         return int(content[2:-1])
     else: 
         return None
-    
 
+
+# function for validate datetime user input and returns datetime 
 def get_datetime(datetime_str: str) -> str:
     datetime_str += ":00"
     try:

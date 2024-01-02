@@ -5,7 +5,7 @@ import datetime
 class Event():
 
     def __init__(self,
-            id: int = None,
+            id: str = None,
             guild: int = None, 
             channel:int = None, 
             type: str = None, 
@@ -24,3 +24,10 @@ class Event():
     
     def __str__(self):
         return f"guild: {self.guild},\nchannel: {self.channel},\ntype: {self.type},\nheader: {self.header},\nbody: {self.body},\ndt: {self.dt}"
+
+
+    def body_to_text(self) -> str:
+        return(" ".join(self.body))
+
+    def body_from_text(self, text: str) -> None:
+        self.body = text.split(" ")
