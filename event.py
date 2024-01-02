@@ -4,21 +4,23 @@ import datetime
 # Question/Information Data Class
 class Event():
 
-    def __init__(
-            self, 
+    def __init__(self,
+            id: int = None,
             guild: int = None, 
             channel:int = None, 
             type: str = None, 
             header:str = None, 
-            body: list[str] = None, 
-            dt: datetime = None) -> None:
+            body: list[str] = [], 
+            dt: datetime = None
+        ) -> None:
+        self.id = id
         self.guild = guild
         self.channel = channel
         self.type = type
         self.header = header
         self.body = body
         self.dt = dt
-        if type == "question":
-            self.number_of_questions = len(body)
-        else:
-            self.number_of_questions = 0
+
+    
+    def __str__(self):
+        return f"guild: {self.guild},\nchannel: {self.channel},\ntype: {self.type},\nheader: {self.header},\nbody: {self.body},\ndt: {self.dt}"

@@ -1,18 +1,18 @@
 import discord
 import config
-from discord.ui import Button, View, Select, Modal
-from discord.ext import commands
-import start_view
+from datetime import datetime
+from discord.ext import tasks, commands
+from start_view import StartView 
+import scheduler
 
 
-bot_config = {
-    'token': config.TOKEN,
-    'prefix': config.PREFIX,
-}
+class TeachingAssistantBot(commands.Bot):
+    events_heap = scheduler.MinHeap()
 
-bot = commands.Bot(
+
+bot = TeachingAssistantBot(
     intents=discord.Intents.all(),
-    command_prefix=bot_config['prefix'],
+    command_prefix=config.PREFIX,
 )
 
 
@@ -35,9 +35,16 @@ async def info(iteraction):
 @bot.tree.command(name="start")
 async def start(interaction):
     root_channel = bot.get_channel(interaction.channel_id)
-    view = start_view.ButtonsView(root_channel, bot)
+    view = StartView(root_channel, bot)
     await interaction.response.send_message("Что вам нужно?")
     await root_channel.send(view=view)
 
 
-bot.run(bot_config['token'])
+@tasks.loop(seconds=60)
+async def sender():
+    if len(bot.events_heap.heap) != 0:
+        dt_obj = datetime.strptime(bot.events_heap.heap[-1]["dt"], '%d/%m/%y %H:%M:%S')
+        if datetime.now() >= dt_obj:
+            pass #TODO: написать отправку вопросов и сообщений
+
+bot.run(config.TOKEN)
