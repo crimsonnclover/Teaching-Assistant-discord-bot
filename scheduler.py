@@ -54,8 +54,7 @@ class MinHeap:
                 break
 
 
-    def _heapify_down(self):
-        index = 0
+    def _heapify_down(self, index=0):
         while True:
             left_child_index = 2 * index + 1
             right_child_index = 2 * index + 2

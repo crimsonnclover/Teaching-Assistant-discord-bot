@@ -97,18 +97,23 @@ class StartView(View):
             self.event.guild = modal_interaction.guild_id
             self.event.type = "question"
             self.event.header = modal_interaction.data["components"][0]["components"][0]["value"]
+            body = []
             for i in range(1, 5):
                 ans = modal_interaction.data["components"][i]["components"][0]["value"]
                 if ans != "":
-                    self.event.body.append(ans)
+                    body.append(ans)
+            self.event.body = body
             await modal_interaction.response.send_message(embed=green_embed("✅ Вопрос сохранен!"))
+            #TODO: тут что то не так с body массивом
 
             await self.get_channel(interaction)
+            await asyncio.sleep(0.5)
             while self.event.channel is None:
                 await self.root_channel.send(embed=red_embed("❌ Неверный канал!", "Попробуйте еще раз."))
                 await self.get_channel(interaction)
 
             await self.get_datetime()
+            await asyncio.sleep(0.5)
             while self.event.dt is None:
                 await self.root_channel.send(embed=red_embed("❌ Неверное время!", "Попробуйте еще раз."))
                 await self.get_datetime()
@@ -133,11 +138,13 @@ class StartView(View):
             await modal_interaction.response.send_message(embed=green_embed("✅ Сообщение сохранено!"))
 
             await self.get_channel(interaction)
+            await asyncio.sleep(0.5)
             while self.event.channel is None:
                 await self.root_channel.send(embed=red_embed("❌ Неверный канал!", "Попробуйте еще раз."))
                 await self.get_channel(interaction)
             
             await self.get_datetime()
+            await asyncio.sleep(0.5)
             while self.event.dt is None:
                 await self.root_channel.send(embed=red_embed("❌ Неверное время!", "Попробуйте еще раз."))
                 await self.get_datetime()
@@ -152,9 +159,11 @@ class StartView(View):
 
 
     async def list_button_callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(view=self)
         await self.get_channel(interaction)
+        await asyncio.sleep(0.5)
         while self.event.channel is None:
-            await self.root_channel.send(embed=red_embed("❌ Неверное время!", "Попробуйте еще раз."))
+            await self.root_channel.send(embed=red_embed("❌ Неверный канал!", "Попробуйте еще раз."))
             await self.get_channel(interaction)
 
         events_list = scheduler.db_get_by_channel(self.event.channel)
@@ -169,9 +178,11 @@ class StartView(View):
 
 
     async def delete_button_callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(view=self)
         await self.get_channel(interaction)
+        await asyncio.sleep(0.5)
         while self.event.channel is None:
-            await self.root_channel.send(embed=red_embed("❌ Неверное время!", "Попробуйте еще раз."))
+            await self.root_channel.send(embed=red_embed("❌ Неверный канал!", "Попробуйте еще раз."))
             await self.get_channel(interaction)
 
         events_list = scheduler.db_get_by_channel(self.event.channel)

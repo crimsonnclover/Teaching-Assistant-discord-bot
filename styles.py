@@ -32,10 +32,10 @@ def info_embed(title: str, description: str):
 
 
 def question_embed(title:str, answers: list[str]):
-    emojis = {0: "1️⃣", 1: "2️⃣", 2: "3️⃣", 3: "4️⃣"}
+    emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
     answers_updated = []
     for i in range(len(answers)):
-        answers_updated[i] = emojis[i] + answers[i]
-    desc = "\n".join(answers_updated) + "\n" + "Голосуй с помощью эмоджи 1️⃣ 2️⃣ 3️⃣ 4️⃣!"
+        answers_updated.append(emojis[i] + answers[i])
+    desc = "\n\n".join(answers_updated) + "\n\n" + "Голосуй с помощью эмоджи 1️⃣ 2️⃣ 3️⃣ 4️⃣ !"
 
-    return discord.Embed(title=("❔" + title), description=desc)
+    return discord.Embed(title=("❔ " + title), description=desc)

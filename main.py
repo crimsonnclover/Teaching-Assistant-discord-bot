@@ -42,7 +42,7 @@ async def on_ready():
 @bot.tree.command(name="info")
 async def info(iteraction):
     root_channel = bot.get_channel(iteraction.channel_id)
-    await root_channel.send(config.INFO_TEXT)
+    await root_channel.send(embed=discord.Embed(title=config.INFO_TITLE, description=config.INFO_TEXT, color=0x563196))
 
 
 # start slash command
@@ -50,21 +50,21 @@ async def info(iteraction):
 async def start(interaction):
     root_channel = bot.get_channel(interaction.channel_id)
     view = StartView(root_channel, bot)
-    await interaction.response.send_message("Что вам нужно?")
-    await root_channel.send(view=view)
+    await interaction.response.send_message(embed=discord.Embed(title="Что вам нужно?", color=0x563196), view=view)
 
 
-# loop with 30 seconds interval, which checks scheduled events and sends it
+# loop with 20 seconds interval, which checks scheduled events and sends it
 @tasks.loop(seconds=20)
 async def sender():
     events = []
     while len(bot.events_heap.heap) != 0  and \
                         datetime.now() >= datetime.strptime(bot.events_heap.heap[-1].dt, '%d/%m/%y %H:%M:%S'):
         events.append(bot.events_heap.pop())
+        scheduler.db_remove_by_id(events[-1].id)
     for event in events:
         channel = bot.get_channel(event.channel)
         if event.type == "question":
-            await channel.send(embed=question_embed[event.header, event.body])
+            await channel.send(embed=question_embed(event.header, event.body))
         elif event.type == "info":
             await channel.send(embed=info_embed(event.header, event.body[0]))
 
