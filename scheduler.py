@@ -90,7 +90,7 @@ def db_load() -> list[tuple]:
 
     cursor.execute("SELECT * FROM event")
     events = cursor.fetchall()
-    connection.close
+    connection.close()
     return events
 
 
@@ -119,5 +119,5 @@ def db_get_by_channel(channel: int) -> list[tuple]:
 
     cursor.execute("SELECT * FROM event WHERE channel = ?", (channel,))
     events = cursor.fetchall()
-    connection.close
+    connection.close()
     return events

@@ -29,5 +29,6 @@ class Event():
     def body_to_text(self) -> str:
         return(" ".join(self.body))
 
+
     def body_from_text(self, text: str) -> None:
         self.body = text.split(" ")
