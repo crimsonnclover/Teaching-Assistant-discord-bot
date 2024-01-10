@@ -52,11 +52,10 @@ async def start(interaction):
     await interaction.response.send_message(embed=discord.Embed(title="Что вам нужно?", color=0x563196), view=view)
 
 
-# loop with 20 seconds interval, which checks scheduled events and sends it
-@tasks.loop(seconds=20)
+# loop with 15 seconds interval, which checks scheduled events and sends it
+@tasks.loop(seconds=15)
 async def sender():
     events = []
-    print(datetime.now())
     while len(bot.events_heap.heap) != 0  and \
                         datetime.now() >= datetime.strptime(bot.events_heap.heap[0].dt, '%d/%m/%y %H:%M:%S'):
         events.append(bot.events_heap.pop())
