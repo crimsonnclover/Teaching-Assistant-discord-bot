@@ -56,8 +56,9 @@ async def start(interaction):
 @tasks.loop(seconds=20)
 async def sender():
     events = []
+    print(datetime.now())
     while len(bot.events_heap.heap) != 0  and \
-                        datetime.now() >= datetime.strptime(bot.events_heap.heap[-1].dt, '%d/%m/%y %H:%M:%S'):
+                        datetime.now() >= datetime.strptime(bot.events_heap.heap[0].dt, '%d/%m/%y %H:%M:%S'):
         events.append(bot.events_heap.pop())
         scheduler.db_remove_by_id(events[-1].id)
     for event in events:
