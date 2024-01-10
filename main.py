@@ -41,7 +41,6 @@ async def on_ready():
 # info slash command
 @bot.tree.command(name="info")
 async def info(interaction):
-    #root_channel = bot.get_channel(iteraction.channel_id)
     await interaction.response.send_message(embed=discord.Embed(title=config.INFO_TITLE, description=config.INFO_TEXT, color=0x563196))
 
 
