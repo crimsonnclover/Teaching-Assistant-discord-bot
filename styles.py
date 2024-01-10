@@ -35,7 +35,7 @@ def question_embed(title:str, answers: list[str]):
     emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
     answers_updated = []
     for i in range(len(answers)):
-        answers_updated.append(emojis[i] + answers[i])
+        answers_updated.append(emojis[i] + ") " + answers[i])
     desc = "\n\n".join(answers_updated) + "\n\n" + "Голосуй с помощью эмоджи 1️⃣ 2️⃣ 3️⃣ 4️⃣ !"
 
     return discord.Embed(title=("❔ " + title), description=desc)
